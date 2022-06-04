@@ -1,0 +1,44 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  # helps ingress controller understand we are trying to feed some config rules
+  # ingress controller is going to scan for all the config files that are present in the cluster
+  # it is going to find the below annotation 
+  # the ingress controller when it finds the below annotation thinks it might have config files in there. 
+  annotations: 
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+spec:
+  rules:
+    - host: ideas-portal.com
+      http:
+        paths:
+          - path: /ideas/create
+            pathType: Prefix
+            backend:
+              service:
+                name: ideas-clusterip-srv
+                port:
+                  number: 4000
+          - path: /ideas
+            pathType: Prefix
+            backend:
+              service:
+                name: query-srv
+                port:
+                  number: 4002
+          - path: /ideas/?(.*)/comments
+            pathType: Prefix
+            backend:
+              service:
+                name: comments-srv
+                port:
+                  number: 4001
+          - path: /?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: client-srv
+                port:
+                  number: 3000

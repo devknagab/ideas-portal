@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ideas-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ideas
+  template:
+    metadata:
+      labels:
+        app: ideas
+    spec: 
+      containers:
+        - name: ideas
+          image: devknagab2/ideas
+---
+# cluster ip address for the ideas service 
+apiVersion: v1
+kind: Service
+metadata:
+  name: ideas-clusterip-srv
+spec:
+  selector:
+      app: ideas
+  ports:
+    - name: ideas
+      protocol: TCP
+      port: 4000
+      targetPort: 4000
